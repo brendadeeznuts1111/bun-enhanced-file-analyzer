@@ -24878,7 +24878,7 @@ var CookieManagerComponent = _s3(() => {
       }, undefined, true, undefined, this)
     ]
   }, undefined, true, undefined, this);
-}, "nqBB49S/l1E=");
+}, "CMgkS+nwQj4=");
 $RefreshReg$(CookieManagerComponent, "src/components/CookieManager.tsx:CookieManagerComponent");
 
 // src/components/URLPatternDemo.tsx
@@ -25208,7 +25208,7 @@ var URLPatternDemo = _s4(() => {
       }, undefined, true, undefined, this)
     ]
   }, undefined, true, undefined, this);
-}, "kb/DM4r+h3k=");
+}, "xg+3b7Z8/bw=");
 $RefreshReg$(URLPatternDemo, "src/components/URLPatternDemo.tsx:URLPatternDemo");
 
 // src/components/BunCookieMapDemo.tsx
@@ -25590,7 +25590,7 @@ var BunCookieMapDemo = _s5(() => {
       }, undefined, true, undefined, this)
     ]
   }, undefined, true, undefined, this);
-}, "JhTfhdz9gIo=");
+}, "mbRtPa/OFpI=");
 $RefreshReg$(BunCookieMapDemo, "src/components/BunCookieMapDemo.tsx:BunCookieMapDemo");
 var buttonStyle = {
   color: "white",
