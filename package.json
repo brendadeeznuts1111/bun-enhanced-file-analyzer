@@ -3,18 +3,18 @@
   "version": "1.0.0",
   "description": "Bun v1.3.6+ Enhanced File Analyzer with Virtual Files, Configuration Matrix, and Professional Dashboard",
   "type": "module",
-  "homepage": "https://github.com/duoplus/bun-enhanced-file-analyzer",
+  "homepage": "https://github.com/brendadeeznuts1111/bun-enhanced-file-analyzer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/duoplus/bun-enhanced-file-analyzer.git"
+    "url": "https://github.com/brendadeeznuts1111/bun-enhanced-file-analyzer.git"
   },
   "bugs": {
-    "url": "https://github.com/duoplus/bun-enhanced-file-analyzer/issues"
+    "url": "https://github.com/brendadeeznuts1111/bun-enhanced-file-analyzer/issues"
   },
   "author": {
-    "name": "DuoPlus Development Team",
-    "email": "dev@duoplus.com",
-    "url": "https://duoplus.com"
+    "name": "Brendan Development",
+    "email": "brendadeeznuts1111@gmail.com",
+    "url": "https://github.com/brendadeeznuts1111"
   },
   "keywords": [
     "bun",

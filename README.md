@@ -39,7 +39,7 @@ Production-ready Bun v1.3.6+ Enhanced File Analyzer with Virtual Files, Configur
 
 ```bash
 # Clone the repository
-git clone https://github.com/duoplus/bun-enhanced-file-analyzer.git
+git clone https://github.com/brendadeeznuts1111/bun-enhanced-file-analyzer.git
 cd bun-enhanced-file-analyzer
 
 # Setup environment
@@ -145,9 +145,9 @@ bun-enhanced-file-analyzer/
 
 ## 🌐 Live Demo
 
-- **🚀 Application**: [https://bun-analyzer.duoplus.com](https://bun-analyzer.duoplus.com)
-- **📊 Dashboard**: [https://bun-analyzer.duoplus.com/dashboard](https://bun-analyzer.duoplus.com/dashboard)
-- **🔗 API Docs**: [https://bun-analyzer.duoplus.com/api](https://bun-analyzer.duoplus.com/api)
+- **🚀 Application**: [https://brendadeeznuts1111.github.io/bun-enhanced-file-analyzer](https://brendadeeznuts1111.github.io/bun-enhanced-file-analyzer)
+- **📊 Dashboard**: [https://brendadeeznuts1111.github.io/bun-enhanced-file-analyzer](https://brendadeeznuts1111.github.io/bun-enhanced-file-analyzer)
+- **🔗 API Docs**: [https://brendadeeznuts1111.github.io/bun-enhanced-file-analyzer](https://brendadeeznuts1111.github.io/bun-enhanced-file-analyzer)
 
 ## 📊 Performance
 
@@ -176,9 +176,9 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 👥 Team
 
-- **[DuoPlus Development Team](https://duoplus.com)**
-- **[GitHub Repository](https://github.com/duoplus/bun-enhanced-file-analyzer)**
-- **[Issues & Support](https://github.com/duoplus/bun-enhanced-file-analyzer/issues)**
+- **[Brendan Development](https://github.com/brendadeeznuts1111)**
+- **[GitHub Repository](https://github.com/brendadeeznuts1111/bun-enhanced-file-analyzer)**
+- **[Issues & Support](https://github.com/brendadeeznuts1111/bun-enhanced-file-analyzer/issues)**
 
 ---
 

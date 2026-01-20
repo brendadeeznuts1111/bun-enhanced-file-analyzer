@@ -24878,7 +24878,7 @@ var CookieManagerComponent = _s3(() => {
       }, undefined, true, undefined, this)
     ]
   }, undefined, true, undefined, this);
-}, "CMgkS+nwQj4=");
+}, "Ni9Eicc9e8I=");
 $RefreshReg$(CookieManagerComponent, "src/components/CookieManager.tsx:CookieManagerComponent");
 
 // src/components/URLPatternDemo.tsx
@@ -25208,7 +25208,7 @@ var URLPatternDemo = _s4(() => {
       }, undefined, true, undefined, this)
     ]
   }, undefined, true, undefined, this);
-}, "xg+3b7Z8/bw=");
+}, "oFubb1LEyhU=");
 $RefreshReg$(URLPatternDemo, "src/components/URLPatternDemo.tsx:URLPatternDemo");
 
 // src/components/BunCookieMapDemo.tsx
@@ -25590,7 +25590,7 @@ var BunCookieMapDemo = _s5(() => {
       }, undefined, true, undefined, this)
     ]
   }, undefined, true, undefined, this);
-}, "mbRtPa/OFpI=");
+}, "a7EkZvwxs3E=");
 $RefreshReg$(BunCookieMapDemo, "src/components/BunCookieMapDemo.tsx:BunCookieMapDemo");
 var buttonStyle = {
   color: "white",
@@ -26545,7 +26545,7 @@ var AppWithTheme = () => /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("div", {
             },
             children: [
               /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("a", {
-                href: "https://github.com/duoplus/bun-enhanced-file-analyzer",
+                href: "https://github.com/brendadeeznuts1111/bun-enhanced-file-analyzer",
                 target: "_blank",
                 rel: "noopener noreferrer",
                 style: {
@@ -26589,7 +26589,7 @@ var AppWithTheme = () => /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("div", {
                 children: "\uD83D\uDD17 Bun Docs"
               }, undefined, false, undefined, this),
               /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("a", {
-                href: "https://github.com/duoplus/bun-enhanced-file-analyzer/issues",
+                href: "https://github.com/brendadeeznuts1111/bun-enhanced-file-analyzer/issues",
                 target: "_blank",
                 rel: "noopener noreferrer",
                 style: {

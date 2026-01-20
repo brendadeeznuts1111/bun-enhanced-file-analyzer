@@ -58,7 +58,7 @@ const AppWithTheme = () => (
           flexWrap: "wrap",
         }}>
           <a 
-            href="https://github.com/duoplus/bun-enhanced-file-analyzer"
+            href="https://github.com/brendadeeznuts1111/bun-enhanced-file-analyzer"
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -104,7 +104,7 @@ const AppWithTheme = () => (
           🔗 Bun Docs
           </a>
           <a 
-            href="https://github.com/duoplus/bun-enhanced-file-analyzer/issues"
+            href="https://github.com/brendadeeznuts1111/bun-enhanced-file-analyzer/issues"
             target="_blank"
             rel="noopener noreferrer"
             style={{
