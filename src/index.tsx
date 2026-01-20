@@ -7,7 +7,7 @@ import { BunCookieMapDemo } from "./components/BunCookieMapDemo";
 import { HTTPHeadersDemo } from "./components/HTTPHeadersDemo";
 import { DevDashboard } from "./components/DevDashboard";
 
-// HMR-persistent root
+// HMR-persistent root for enhanced development experience
 let root: any;
 if (import.meta.hot?.data.root) {
   root = import.meta.hot.data.root;
@@ -18,7 +18,7 @@ if (import.meta.hot?.data.root) {
   }
 }
 
-// Create colored app wrapper
+// Professional themed application wrapper
 const AppWithTheme = () => (
   <div style={{
     background: "linear-gradient(135deg, #3b82f6, #22c55e)",
@@ -33,21 +33,112 @@ const AppWithTheme = () => (
       padding: "2rem",
       boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
     }}>
-      <h1 style={{
-        fontSize: "2rem",
-        fontWeight: "bold",
-        marginBottom: "1rem",
-        color: "#1f2937",
-      }}>🚀 Bun-Native File Analyzer</h1>
-      
-      <div style={{ marginBottom: "2rem" }}>
-        <p style={{ color: "#6b7280", marginBottom: "1rem" }}>
-          Drop files below to analyze them with native Bun APIs
+      <header style={{
+        marginBottom: "2rem",
+        textAlign: "center",
+      }}>
+        <h1 style={{
+          fontSize: "2.5rem",
+          fontWeight: "bold",
+          marginBottom: "1rem",
+          color: "#1f2937",
+          background: "linear-gradient(135deg, #3b82f6, #22c55e)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+        }}>
+          🚀 Bun Enhanced File Analyzer v1.3.6+
+        </h1>
+        
+        <nav style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "1rem",
+          marginBottom: "1rem",
+          flexWrap: "wrap",
+        }}>
+          <a 
+            href="https://github.com/duoplus/bun-enhanced-file-analyzer"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#3b82f6",
+              textDecoration: "none",
+              padding: "0.5rem 1rem",
+              borderRadius: "0.5rem",
+              background: "rgba(59, 130, 246, 0.1)",
+              transition: "all 0.2s ease",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = "rgba(59, 130, 246, 0.1)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            📚 Documentation
+          </a>
+          <a 
+            href="https://bun.sh/docs"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#22c55e",
+              textDecoration: "none",
+              padding: "0.5rem 1rem",
+              borderRadius: "0.5rem",
+              background: "rgba(34, 197, 94, 0.1)",
+              transition: "all 0.2s ease",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = "rgba(34, 197, 94, 0.2)";
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = "rgba(34, 197, 94, 0.1)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+          🔗 Bun Docs
+          </a>
+          <a 
+            href="https://github.com/duoplus/bun-enhanced-file-analyzer/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#f59e0b",
+              textDecoration: "none",
+              padding: "0.5rem 1rem",
+              borderRadius: "0.5rem",
+              background: "rgba(245, 158, 11, 0.1)",
+              transition: "all 0.2s ease",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = "rgba(245, 158, 11, 0.2)";
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = "rgba(245, 158, 11, 0.1)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            🐛 Report Issues
+          </a>
+        </nav>
+        
+        <p style={{ 
+          color: "#6b7280", 
+          marginBottom: "2rem",
+          fontSize: "1.1rem",
+          lineHeight: "1.6",
+        }}>
+          🎯 <strong>Production-ready Bun v1.3.6+ Enhanced File Analyzer</strong> featuring Virtual Files, 
+          Configuration Matrix, and Professional Dashboard. Explore native Bun APIs, 
+          React Fast Refresh, and enterprise-grade architecture.
         </p>
-        <p style={{ color: "#6b7280", marginBottom: "2rem" }}>
-          Explore Cookie Management, URLPattern routing, HTTP headers, DOM analysis, and more!
-        </p>
-      </div>
+      </header>
       
       <FileAnalyzer />
       

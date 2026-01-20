@@ -26516,26 +26516,117 @@ var AppWithTheme = () => /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("div", {
       boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)"
     },
     children: [
-      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("h1", {
+      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("header", {
         style: {
-          fontSize: "2rem",
-          fontWeight: "bold",
-          marginBottom: "1rem",
-          color: "#1f2937"
+          marginBottom: "2rem",
+          textAlign: "center"
         },
-        children: "\uD83D\uDE80 Bun-Native File Analyzer"
-      }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("div", {
-        style: { marginBottom: "2rem" },
         children: [
-          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("p", {
-            style: { color: "#6b7280", marginBottom: "1rem" },
-            children: "Drop files below to analyze them with native Bun APIs"
+          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("h1", {
+            style: {
+              fontSize: "2.5rem",
+              fontWeight: "bold",
+              marginBottom: "1rem",
+              color: "#1f2937",
+              background: "linear-gradient(135deg, #3b82f6, #22c55e)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text"
+            },
+            children: "\uD83D\uDE80 Bun Enhanced File Analyzer v1.3.6+"
           }, undefined, false, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("nav", {
+            style: {
+              display: "flex",
+              justifyContent: "center",
+              gap: "1rem",
+              marginBottom: "1rem",
+              flexWrap: "wrap"
+            },
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("a", {
+                href: "https://github.com/duoplus/bun-enhanced-file-analyzer",
+                target: "_blank",
+                rel: "noopener noreferrer",
+                style: {
+                  color: "#3b82f6",
+                  textDecoration: "none",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "0.5rem",
+                  background: "rgba(59, 130, 246, 0.1)",
+                  transition: "all 0.2s ease"
+                },
+                onMouseOver: (e) => {
+                  e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                },
+                onMouseOut: (e) => {
+                  e.currentTarget.style.background = "rgba(59, 130, 246, 0.1)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                },
+                children: "\uD83D\uDCDA Documentation"
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("a", {
+                href: "https://bun.sh/docs",
+                target: "_blank",
+                rel: "noopener noreferrer",
+                style: {
+                  color: "#22c55e",
+                  textDecoration: "none",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "0.5rem",
+                  background: "rgba(34, 197, 94, 0.1)",
+                  transition: "all 0.2s ease"
+                },
+                onMouseOver: (e) => {
+                  e.currentTarget.style.background = "rgba(34, 197, 94, 0.2)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                },
+                onMouseOut: (e) => {
+                  e.currentTarget.style.background = "rgba(34, 197, 94, 0.1)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                },
+                children: "\uD83D\uDD17 Bun Docs"
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("a", {
+                href: "https://github.com/duoplus/bun-enhanced-file-analyzer/issues",
+                target: "_blank",
+                rel: "noopener noreferrer",
+                style: {
+                  color: "#f59e0b",
+                  textDecoration: "none",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "0.5rem",
+                  background: "rgba(245, 158, 11, 0.1)",
+                  transition: "all 0.2s ease"
+                },
+                onMouseOver: (e) => {
+                  e.currentTarget.style.background = "rgba(245, 158, 11, 0.2)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                },
+                onMouseOut: (e) => {
+                  e.currentTarget.style.background = "rgba(245, 158, 11, 0.1)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                },
+                children: "\uD83D\uDC1B Report Issues"
+              }, undefined, false, undefined, this)
+            ]
+          }, undefined, true, undefined, this),
           /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("p", {
-            style: { color: "#6b7280", marginBottom: "2rem" },
-            children: "Explore Cookie Management, URLPattern routing, HTTP headers, DOM analysis, and more!"
-          }, undefined, false, undefined, this)
+            style: {
+              color: "#6b7280",
+              marginBottom: "2rem",
+              fontSize: "1.1rem",
+              lineHeight: "1.6"
+            },
+            children: [
+              "\uD83C\uDFAF ",
+              /* @__PURE__ */ jsx_dev_runtime8.jsxDEV("strong", {
+                children: "Production-ready Bun v1.3.6+ Enhanced File Analyzer"
+              }, undefined, false, undefined, this),
+              " featuring Virtual Files, Configuration Matrix, and Professional Dashboard. Explore native Bun APIs, React Fast Refresh, and enterprise-grade architecture."
+            ]
+          }, undefined, true, undefined, this)
         ]
       }, undefined, true, undefined, this),
       /* @__PURE__ */ jsx_dev_runtime8.jsxDEV(FileAnalyzer, {}, undefined, false, undefined, this),

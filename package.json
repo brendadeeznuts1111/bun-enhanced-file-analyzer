@@ -1,17 +1,44 @@
 {
-  "name": "file-analyzer-stack",
+  "name": "bun-enhanced-file-analyzer",
   "version": "1.0.0",
+  "description": "Bun v1.3.6+ Enhanced File Analyzer with Virtual Files, Configuration Matrix, and Professional Dashboard",
   "type": "module",
+  "homepage": "https://github.com/duoplus/bun-enhanced-file-analyzer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/duoplus/bun-enhanced-file-analyzer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/duoplus/bun-enhanced-file-analyzer/issues"
+  },
+  "author": {
+    "name": "DuoPlus Development Team",
+    "email": "dev@duoplus.com",
+    "url": "https://duoplus.com"
+  },
+  "keywords": [
+    "bun",
+    "file-analyzer",
+    "react",
+    "typescript",
+    "virtual-files",
+    "hmr",
+    "cookie-map",
+    "urlpattern",
+    "dashboard",
+    "v1.3.6"
+  ],
   "scripts": {
     "setup": "./scripts/setup-bun.sh",
     "setup:basic": "./scripts/setup.sh",
+    "start": "bun run dev",
     "dev": "bun run --watch api/index.ts & bun build --watch --react-fast-refresh ./src/index.tsx --outdir ./public & bun --hot tools/serve.ts",
     "dev:full": "./scripts/dev.sh",
     "dev:api": "bun run --watch api/index.ts",
     "dev:frontend": "bun build --watch --react-fast-refresh ./src/index.tsx --outdir ./public",
     "dev:serve": "bun --hot tools/serve.ts",
     "build": "bun run build:prod",
-    "build:dev": "PORT=3879 API_PORT=3005 NODE_ENV=development bun build --react-fast-refresh ./src/index.tsx --outdir ./public",
+    "build:dev": "PORT=3879 API_PORT=3007 NODE_ENV=development bun build --react-fast-refresh ./src/index.tsx --outdir ./public",
     "build:prod": "bun build --minify --no-sourcemap ./src/index.tsx --outdir ./public",
     "build:analyze": "bun build --metafile ./src/index.tsx --outdir ./public",
     "build:compare": "bun run examples/build-examples.ts",
@@ -19,7 +46,7 @@
     "build:virtual": "bun -e \"import { buildVirtualApp } from './examples/build-files-demo.ts'; buildVirtualApp();\"",
     "build:overrides": "bun -e \"import { buildWithOverrides } from './examples/build-files-demo.ts'; buildWithOverrides();\"",
     "build:generated": "bun -e \"import { buildWithGeneratedCode } from './examples/build-files-demo.ts'; buildWithGeneratedCode();\"",
-    "start": "bun tools/serve.ts",
+    "serve": "bun tools/serve.ts",
     "start:prod": "NODE_ENV=production bun tools/serve.ts",
     "deploy": "./scripts/deploy.sh",
     "setup:prod": "./scripts/deploy.sh",
