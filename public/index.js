@@ -24878,7 +24878,7 @@ var CookieManagerComponent = _s3(() => {
       }, undefined, true, undefined, this)
     ]
   }, undefined, true, undefined, this);
-}, "Ni9Eicc9e8I=");
+}, "nqBB49S/l1E=");
 $RefreshReg$(CookieManagerComponent, "src/components/CookieManager.tsx:CookieManagerComponent");
 
 // src/components/URLPatternDemo.tsx
@@ -25208,7 +25208,7 @@ var URLPatternDemo = _s4(() => {
       }, undefined, true, undefined, this)
     ]
   }, undefined, true, undefined, this);
-}, "oFubb1LEyhU=");
+}, "kb/DM4r+h3k=");
 $RefreshReg$(URLPatternDemo, "src/components/URLPatternDemo.tsx:URLPatternDemo");
 
 // src/components/BunCookieMapDemo.tsx
@@ -25590,7 +25590,7 @@ var BunCookieMapDemo = _s5(() => {
       }, undefined, true, undefined, this)
     ]
   }, undefined, true, undefined, this);
-}, "a7EkZvwxs3E=");
+}, "JhTfhdz9gIo=");
 $RefreshReg$(BunCookieMapDemo, "src/components/BunCookieMapDemo.tsx:BunCookieMapDemo");
 var buttonStyle = {
   color: "white",
@@ -25993,7 +25993,7 @@ var jsx_dev_runtime7 = __toESM(require_jsx_dev_runtime(), 1);
 var BUILD_CONFIG = {
   bunVersion: "1.3.6",
   buildTime: Date.now(),
-  buildId: Bun?.randomUUIDv7?.() || "build-" + Math.random().toString(36).substr(2, 9),
+  buildId: "build-" + Math.random().toString(36).substr(2, 9),
   debug: true,
   version: "1.0.0",
   apiUrl: "http://localhost:3007",
@@ -26024,6 +26024,8 @@ var THEME = {
     config: "#0891b2"
   }
 };
+var BUILD_ID = "build-" + Math.random().toString(36).substr(2, 9);
+var BUILD_TIME = Date.now();
 var _s7 = $RefreshSig$();
 var DevDashboard = _s7(() => {
   _s7();
