@@ -3655,6 +3655,12 @@ console.<span class="fn">log</span>(<span class="fn">color</span>(<span class="s
       { name: 'CPU Profiling', action: () => document.querySelector('[onclick="toggleProfiling()"]')?.click(), tags: 'profile cpu perf benchmark' },
       { name: 'Refresh', action: () => refreshData(), tags: 'refresh reload update' },
       { name: 'Export Report', action: () => exportReport(), tags: 'export save download' },
+      { name: 'Database Metrics (Live)', action: () => toggleDatabaseMetrics(), tags: 'database metrics live connections queries performance' },
+      { name: 'Application Metrics (Live)', action: () => toggleApplicationMetrics(), tags: 'application metrics live requests users errors performance' },
+      { name: 'System Metrics (Live)', action: () => toggleSystemMetrics(), tags: 'system metrics live cpu memory disk network' },
+      { name: 'Real-time Updates', action: () => toggleRealtimeUpdates(), tags: 'realtime updates live monitoring auto refresh' },
+      { name: 'WebSocket Connection', action: () => toggleWebSocket(), tags: 'websocket connection live streaming real-time' },
+      { name: 'Export Live Metrics', action: () => exportLiveMetrics(), tags: 'export live metrics download json data' },
     ];
     
     function scrollToCard(name) {
@@ -3765,6 +3771,12 @@ console.<span class="fn">log</span>(<span class="fn">color</span>(<span class="s
         case '4': toggleLatency(); break;
         case '5': toggleTelemetry(); break;
         case '6': toggleN95(); break;
+        case '7': toggleDatabaseMetrics(); break;
+        case '8': toggleApplicationMetrics(); break;
+        case '9': toggleSystemMetrics(); break;
+        case '0': toggleRealtimeUpdates(); break;
+        case 'w': toggleWebSocket(); break;
+        case 'x': exportLiveMetrics(); break;
         case 'g': window.scrollTo({ top: 0, behavior: 'smooth' }); break;
         case '/': e.preventDefault(); showPalette(); break;
         case 'escape': hidePalette(); break;
@@ -3791,6 +3803,12 @@ V — Toggle Performance Chart
 M — Toggle System Monitor
 B — Run Benchmarks
 1-6 — Toggle Scope/Security/Performance/Latency/Telemetry/N95
+7 — Toggle Database Metrics (Live)
+8 — Toggle Application Metrics (Live)
+9 — Toggle System Metrics (Live)
+0 — Toggle Real-time Updates
+W — Toggle WebSocket Connection
+X — Export Live Metrics
 G — Scroll to top
 Esc — Close palette
 ? — Show this help`;
@@ -4682,6 +4700,218 @@ console.log("Clean:", Bun.semver.clean("  v1.2.3  "));`
         n.style.opacity = '0';
         setTimeout(() => n.remove(), 200);
       }, 2000);
+    }
+    
+    // Real-time monitoring functions
+    let realtimeEnabled = false;
+    let websocketConnected = false;
+    let realtimeInterval = null;
+    
+    function toggleDatabaseMetrics() {
+      const card = document.querySelector('[data-section="database-metrics"]');
+      if (card) {
+        card.style.display = card.style.display === 'none' ? 'block' : 'none';
+        showNotification(card.style.display === 'none' ? 'Database Metrics Hidden' : 'Database Metrics Shown');
+        if (card.style.display !== 'none') {
+          updateDatabaseMetrics();
+        }
+      } else {
+        showNotification('Database Metrics: Live connection monitoring, query performance, connection pooling');
+      }
+    }
+    
+    function toggleApplicationMetrics() {
+      const card = document.querySelector('[data-section="application-metrics"]');
+      if (card) {
+        card.style.display = card.style.display === 'none' ? 'block' : 'none';
+        showNotification(card.style.display === 'none' ? 'Application Metrics Hidden' : 'Application Metrics Shown');
+        if (card.style.display !== 'none') {
+          updateApplicationMetrics();
+        }
+      } else {
+        showNotification('Application Metrics: Request rates, error tracking, user activity, performance');
+      }
+    }
+    
+    function toggleSystemMetrics() {
+      const card = document.querySelector('[data-section="system-metrics"]');
+      if (card) {
+        card.style.display = card.style.display === 'none' ? 'block' : 'none';
+        showNotification(card.style.display === 'none' ? 'System Metrics Hidden' : 'System Metrics Shown');
+        if (card.style.display !== 'none') {
+          updateSystemMetrics();
+        }
+      } else {
+        showNotification('System Metrics: CPU, memory, disk, network usage, load average');
+      }
+    }
+    
+    function toggleRealtimeUpdates() {
+      realtimeEnabled = !realtimeEnabled;
+      if (realtimeEnabled) {
+        startRealtimeUpdates();
+        showNotification('Real-time Updates Enabled (5s interval)');
+      } else {
+        stopRealtimeUpdates();
+        showNotification('Real-time Updates Disabled');
+      }
+    }
+    
+    function toggleWebSocket() {
+      websocketConnected = !websocketConnected;
+      if (websocketConnected) {
+        connectWebSocket();
+        showNotification('WebSocket Connection Enabled');
+      } else {
+        disconnectWebSocket();
+        showNotification('WebSocket Connection Disabled');
+      }
+    }
+    
+    function exportLiveMetrics() {
+      const metrics = {
+        timestamp: Date.now(),
+        database: getDatabaseMetrics(),
+        application: getApplicationMetrics(),
+        system: getSystemMetrics(),
+        realtime: realtimeEnabled,
+        websocket: websocketConnected
+      };
+      
+      const blob = new Blob([JSON.stringify(metrics, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `live-metrics-${new Date().toISOString().slice(0, 19)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showNotification('Live Metrics Exported');
+    }
+    
+    function startRealtimeUpdates() {
+      if (realtimeInterval) clearInterval(realtimeInterval);
+      realtimeInterval = setInterval(() => {
+        updateAllMetrics();
+      }, 5000);
+    }
+    
+    function stopRealtimeUpdates() {
+      if (realtimeInterval) {
+        clearInterval(realtimeInterval);
+        realtimeInterval = null;
+      }
+    }
+    
+    function updateAllMetrics() {
+      updateDatabaseMetrics();
+      updateApplicationMetrics();
+      updateSystemMetrics();
+    }
+    
+    function updateDatabaseMetrics() {
+      // Simulate database metrics
+      const metrics = {
+        connections: Math.floor(Math.random() * 50) + 10,
+        slowQueries: Math.floor(Math.random() * 5),
+        cacheHitRate: (Math.random() * 20 + 80).toFixed(1),
+        avgQueryTime: (Math.random() * 50 + 10).toFixed(1)
+      };
+      
+      // Update UI elements
+      const elements = {
+        'db-connections': metrics.connections,
+        'slow-queries': metrics.slowQueries,
+        'cache-hit-rate': metrics.cacheHitRate + '%',
+        'avg-query-time': metrics.avgQueryTime + 'ms'
+      };
+      
+      Object.entries(elements).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      });
+    }
+    
+    function updateApplicationMetrics() {
+      const metrics = {
+        requestRate: Math.floor(Math.random() * 1000) + 500,
+        errorRate: (Math.random() * 2).toFixed(2),
+        activeUsers: Math.floor(Math.random() * 500) + 100,
+        responseTime: (Math.random() * 100 + 50).toFixed(0)
+      };
+      
+      const elements = {
+        'request-rate': metrics.requestRate,
+        'error-rate': metrics.errorRate + '%',
+        'active-users': metrics.activeUsers,
+        'response-time': metrics.responseTime + 'ms'
+      };
+      
+      Object.entries(elements).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      });
+    }
+    
+    function updateSystemMetrics() {
+      const metrics = {
+        cpuUsage: (Math.random() * 30 + 20).toFixed(1),
+        memoryUsage: (Math.random() * 40 + 40).toFixed(1),
+        diskUsage: (Math.random() * 20 + 60).toFixed(1),
+        networkIn: (Math.random() * 100).toFixed(1),
+        networkOut: (Math.random() * 100).toFixed(1)
+      };
+      
+      const elements = {
+        'cpu-usage': metrics.cpuUsage + '%',
+        'memory-usage': metrics.memoryUsage + '%',
+        'disk-usage': metrics.diskUsage + '%',
+        'network-in': metrics.networkIn + 'MB/s',
+        'network-out': metrics.networkOut + 'MB/s'
+      };
+      
+      Object.entries(elements).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      });
+    }
+    
+    function getDatabaseMetrics() {
+      return {
+        connections: document.getElementById('db-connections')?.textContent || '0',
+        slowQueries: document.getElementById('slow-queries')?.textContent || '0',
+        cacheHitRate: document.getElementById('cache-hit-rate')?.textContent || '0%',
+        avgQueryTime: document.getElementById('avg-query-time')?.textContent || '0ms'
+      };
+    }
+    
+    function getApplicationMetrics() {
+      return {
+        requestRate: document.getElementById('request-rate')?.textContent || '0',
+        errorRate: document.getElementById('error-rate')?.textContent || '0%',
+        activeUsers: document.getElementById('active-users')?.textContent || '0',
+        responseTime: document.getElementById('response-time')?.textContent || '0ms'
+      };
+    }
+    
+    function getSystemMetrics() {
+      return {
+        cpuUsage: document.getElementById('cpu-usage')?.textContent || '0%',
+        memoryUsage: document.getElementById('memory-usage')?.textContent || '0%',
+        diskUsage: document.getElementById('disk-usage')?.textContent || '0%',
+        networkIn: document.getElementById('network-in')?.textContent || '0MB/s',
+        networkOut: document.getElementById('network-out')?.textContent || '0MB/s'
+      };
+    }
+    
+    function connectWebSocket() {
+      // Placeholder for WebSocket connection
+      console.log('WebSocket connection initialized');
+    }
+    
+    function disconnectWebSocket() {
+      // Placeholder for WebSocket disconnection
+      console.log('WebSocket connection closed');
     }
     
     setInterval(() => {

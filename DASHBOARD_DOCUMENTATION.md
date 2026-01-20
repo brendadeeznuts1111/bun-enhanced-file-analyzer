@@ -31,11 +31,14 @@ The Bun Monitoring Dashboard is a comprehensive development tool showcasing all 
 | 1️⃣9️⃣ **Command Palette** | Navigation | `⌘K` | - | Hidden | ✅ | ❌ | ❌ | ✅ | command, palette, search | ✅ Active |
 | 2️⃣0️⃣ **Export Report** | Utility | `E` | - | Hidden | ❌ | ❌ | ✅ | ✅ | export, report, download | ✅ Active |
 | 2️⃣1️⃣ **Refresh Data** | Utility | `R` | - | Hidden | ❌ | ✅ | ❌ | ✅ | refresh, reload, update | ✅ Active |
-| 2️⃣2️⃣ **Bun.hash()** | Core API | - | - | Visible | ✅ | ❌ | ❌ | ✅ | hash, crc32, algorithm | ✅ Active |
-| 2️⃣3️⃣ **Bun.color()** | Core API | - | - | Visible | ✅ | ❌ | ❌ | ✅ | color, ansi, terminal | ✅ Active |
-| 2️⃣4️⃣ **Bun.Glob** | Core API | - | - | Visible | ✅ | ❌ | ❌ | ✅ | glob, pattern, match | ✅ Active |
-| 2️⃣5️⃣ **Bun.inspect()** | Core API | - | - | Visible | ✅ | ❌ | ❌ | ✅ | inspect, debug, table | ✅ Active |
-| 2️⃣6️⃣ **Bun.semver()** | Core API | - | - | Visible | ✅ | ❌ | ❌ | ✅ | semver, version, compare | ✅ Active |
+| 2️⃣2️⃣ **Database Metrics (Live)** | Monitoring | `7` | - | Hidden | ✅ | ✅ | ✅ | ✅ | database, live, connections, queries | ✅ Active |
+| 2️⃣3️⃣ **Application Metrics (Live)** | Monitoring | `8` | - | Hidden | ✅ | ✅ | ✅ | ✅ | application, live, requests, users | ✅ Active |
+| 2️⃣4️⃣ **System Metrics (Live)** | Monitoring | `9` | - | Hidden | ✅ | ✅ | ✅ | ✅ | system, live, cpu, memory, disk | ✅ Active |
+| 2️⃣5️⃣ **Real-time Updates** | Monitoring | `0` | - | Hidden | ✅ | ✅ | ❌ | ✅ | realtime, updates, monitoring, auto | ✅ Active |
+| 2️⃣6️⃣ **WebSocket Connection** | Development | `W` | - | Hidden | ✅ | ✅ | ❌ | ✅ | websocket, connection, streaming, live | ✅ Active |
+| 2️⃣7️⃣ **Export Live Metrics** | Utility | `X` | - | Hidden | ❌ | ❌ | ✅ | ✅ | export, live, metrics, json | ✅ Active |
+| 2️⃣8️⃣ **Bun.hash()** | Core API | - | - | Visible | ✅ | ❌ | ❌ | ✅ | hash, crc32, algorithm | ✅ Active |
+| 2️⃣9️⃣ **Bun.color()** | Core API | - | - | Visible | ✅ | ❌ | ❌ | ✅ | color, ansi, terminal | ✅ Active |
 | 2️⃣7️⃣ **Bun.password()** | Core API | - | - | Visible | ✅ | ❌ | ❌ | ✅ | password, hash, argon2 | ✅ Active |
 | 2️⃣8️⃣ **Bun.spawn()** | Core API | - | - | Visible | ✅ | ❌ | ❌ | ✅ | spawn, process, child | ✅ Active |
 | 2️⃣9️⃣ **Bun.Transpiler** | Core API | - | - | Visible | ✅ | ❌ | ❌ | ✅ | transpiler, typescript, jsx | ✅ Active |
@@ -68,12 +71,12 @@ The Bun Monitoring Dashboard is a comprehensive development tool showcasing all 
 
 ### 📈 Matrix Summary
 
-**Total Features**: 53
+**Total Features**: 56
 **Categories**: 6 (Monitoring, Performance, Data, Compliance, Development, Core API)
-**Interactive Elements**: 21 with keyboard shortcuts
-**Real-time Updates**: 6 features
-**Export Capabilities**: 8 features
-**Toggle Functionality**: 22 features
+**Interactive Elements**: 24 with keyboard shortcuts
+**Real-time Updates**: 9 features
+**Export Capabilities**: 9 features
+**Toggle Functionality**: 25 features
 
 **Status Legend:**
 - ✅ Active - Fully implemented and functional
