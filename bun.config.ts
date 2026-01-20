@@ -11,7 +11,10 @@ const tsconfig = Bun.JSONC.parse(
  * Bun v1.3.6+ Enhanced Configuration
  * Virtual Files, Metafile Analysis, React Fast Refresh & Cross-Compilation
  */
-export default {
+// Post-build hooks for bundle analysis
+const { runPostBuildHooks } = await import("./scripts/build-hooks.ts");
+
+const buildResult = await Bun.build({
   entrypoints: ["./src/index.tsx"],
   outdir: "./public",
   target: "browser",
@@ -290,3 +293,15 @@ if (import.meta.hot) {
     }
   });
 }
+
+// Run post-build hooks with comprehensive analysis
+const { runPostBuildHooks } = await import("./scripts/build-hooks.ts");
+
+await runPostBuildHooks(buildResult, {
+  outputDir: "./public",
+  generateHeaders: true,
+  trackSize: true,
+  createReports: true,
+});
+
+export default buildResult;
