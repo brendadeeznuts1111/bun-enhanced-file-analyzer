@@ -1,0 +1,46 @@
+{
+  "name": "file-analyzer-stack",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "setup": "./scripts/setup-bun.sh",
+    "setup:basic": "./scripts/setup.sh",
+    "dev": "bun run --watch api/index.ts & bun build --watch --react-fast-refresh ./src/index.tsx --outdir ./public & bun --hot tools/serve.ts",
+    "dev:full": "./scripts/dev.sh",
+    "dev:api": "bun run --watch api/index.ts",
+    "dev:frontend": "bun build --watch --react-fast-refresh ./src/index.tsx --outdir ./public",
+    "dev:serve": "bun --hot tools/serve.ts",
+    "build": "bun run build:prod",
+    "build:dev": "PORT=3879 API_PORT=3005 NODE_ENV=development bun build --react-fast-refresh ./src/index.tsx --outdir ./public",
+    "build:prod": "bun build --minify --no-sourcemap ./src/index.tsx --outdir ./public",
+    "build:analyze": "bun build --metafile ./src/index.tsx --outdir ./public",
+    "build:compare": "bun run examples/build-examples.ts",
+    "build:files": "bun run examples/build-files-demo.ts",
+    "build:virtual": "bun -e \"import { buildVirtualApp } from './examples/build-files-demo.ts'; buildVirtualApp();\"",
+    "build:overrides": "bun -e \"import { buildWithOverrides } from './examples/build-files-demo.ts'; buildWithOverrides();\"",
+    "build:generated": "bun -e \"import { buildWithGeneratedCode } from './examples/build-files-demo.ts'; buildWithGeneratedCode();\"",
+    "start": "bun tools/serve.ts",
+    "start:prod": "NODE_ENV=production bun tools/serve.ts",
+    "deploy": "./scripts/deploy.sh",
+    "setup:prod": "./scripts/deploy.sh",
+    "monitor": "./scripts/monitor.sh",
+    "clean": "./scripts/clean.sh",
+    "clean:all": "rm -rf public/ dist/ .bun-cache/ temp/ logs/",
+    "test": "bun test",
+    "test:watch": "bun test --watch"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "hono": "^3.0.0",
+    "hono/cors": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "concurrently": "^7.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0"
+  }
+}
