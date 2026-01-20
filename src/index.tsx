@@ -6,17 +6,53 @@ import { URLPatternDemo } from "./components/URLPatternDemo";
 import { BunCookieMapDemo } from "./components/BunCookieMapDemo";
 import { HTTPHeadersDemo } from "./components/HTTPHeadersDemo";
 import { DevDashboard } from "./components/DevDashboard";
+import React, { StrictMode } from "react";
+import { getHMRPersistentRoot } from "./hmr-persistent-root";
+import App from "./app";
+import "./styles.css";
 
-// HMR-persistent root for enhanced development experience
-let root: any;
-if (import.meta.hot?.data.root) {
-  root = import.meta.hot.data.root;
-} else {
-  root = createRoot(document.getElementById("root")!);
-  if (import.meta.hot) {
-    import.meta.hot.data.root = root;
-  }
+// Import configuration with HMR support
+import { config, initConfigHMR } from "./config";
+import { useConfigHMR } from "./config/hmr";
+
+// Enhanced HMR-persistent root with config support
+function HMRPersistentApp() {
+  const [currentConfig, setCurrentConfig] = useConfigHMR(config);
+  
+  React.useEffect(() => {
+    // Initialize config HMR
+    initConfigHMR(currentConfig);
+    
+    // Listen for config updates
+    const handleConfigUpdate = (event: CustomEvent) => {
+      console.log("🔄 App: Configuration updated via HMR");
+      setCurrentConfig(event.detail.config);
+    };
+    
+    window.addEventListener('config-hmr-update', handleConfigUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('config-hmr-update', handleConfigUpdate as EventListener);
+    };
+  }, [currentConfig]);
+  
+  return (
+    <StrictMode>
+      <App config={currentConfig} />
+    </StrictMode>
+  );
 }
+
+// Get or create HMR-persistent root
+const container = document.getElementById("root");
+const root = getHMRPersistentRoot(container);
+
+// Render with HMR support
+if (import.meta.hot) {
+  import.meta.hot.accept();
+}
+
+root.render(<HMRPersistentApp />);
 
 // Professional themed application wrapper
 const AppWithTheme = () => (

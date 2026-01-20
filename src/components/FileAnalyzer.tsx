@@ -1,8 +1,13 @@
-import { useCallback, useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useFileStore } from "../stores/fileStore";
 import { Palette } from "../utils/colors";
+import type { Config } from "../config/types";
 
-export const FileAnalyzer = () => {
+interface FileAnalyzerProps {
+  config?: Config;
+}
+
+export function FileAnalyzer({ config }: FileAnalyzerProps = {}) {
   const [dragActive, setDragActive] = useState(false);
   const { addFile, files } = useFileStore();
   const uploadProgress = (import.meta.hot?.data.progress ?? 0) as number;

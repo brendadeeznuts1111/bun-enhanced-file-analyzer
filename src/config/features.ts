@@ -7,6 +7,7 @@ export const Features = {
   workerPool: typeof navigator !== "undefined" && (navigator.hardwareConcurrency || 0) >= 4,
   virusScan: false,
   gradients: false,
+  configHMR: true, // Add configHMR feature
 } as const;
 
 export const WorkerPool = Features.workerPool
