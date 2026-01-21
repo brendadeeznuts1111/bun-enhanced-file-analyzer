@@ -19,6 +19,20 @@ interface CookieClientConfig {
     enabled?: boolean;
     logLevel?: 'debug' | 'info' | 'warn' | 'error';
   };
+  performance?: {
+    maxHeaderSize?: number;
+    enableSizeGuard?: boolean;
+    evictionStrategy?: 'lru' | 'priority' | 'size';
+  };
+  session?: {
+    autoRefresh?: boolean;
+    refreshThreshold?: number; // seconds before expiry
+    refreshEndpoint?: string;
+  };
+  multiTenant?: {
+    enabled?: boolean;
+    scopeSeparator?: string;
+  };
 }
 
 interface RequestMetrics {
@@ -100,11 +114,11 @@ export function createCookieClient(clientConfig?: CookieClientConfig) {
           processedOptions = result.options;
         }
         
-        // Build cookie header
-        const cookieHeader = Array.from(jar.entries())
-          .filter(([name]) => !name.startsWith('__')) // Filter internal cookies
-          .map(([name, value]) => `${name}=${value}`)
-          .join("; ");
+        // Auto-refresh session if needed
+        await this.refreshIfNeeded();
+        
+        // Build cookie header with size guard
+        const cookieHeader = this.toHeaderString();
 
         const headers = new Headers(processedOptions.headers);
         if (cookieHeader) {
@@ -244,10 +258,167 @@ export function createCookieClient(clientConfig?: CookieClientConfig) {
       return headers;
     },
 
-    toHeaderString(): string {
-      return Array.from(jar.entries())
+    toHeaderString(maxSize?: number): string {
+      const header = Array.from(jar.entries())
         .map(([name, value]) => `${name}=${value}`)
         .join("; ");
+      
+      // Apply size guard if enabled
+      if (config.performance?.enableSizeGuard) {
+        const sizeLimit = maxSize || config.performance.maxHeaderSize || 4096;
+        if (header.length > sizeLimit) {
+          log('warn', `Cookie header exceeds ${sizeLimit} bytes (${header.length} bytes)`);
+          return this.applyEvictionStrategy(header, sizeLimit);
+        }
+      }
+      
+      return header;
+    },
+
+    applyEvictionStrategy(header: string, maxSize: number): string {
+      const strategy = config.performance?.evictionStrategy || 'priority';
+      const cookies = Array.from(jar.entries());
+      
+      log('debug', `Applying ${strategy} eviction strategy`);
+      
+      switch (strategy) {
+        case 'lru':
+          // Remove least recently used cookies (simplified)
+          return cookies
+            .slice(-Math.floor(cookies.length * 0.7)) // Keep 70%
+            .map(([name, value]) => `${name}=${value}`)
+            .join("; ");
+            
+        case 'size':
+          // Remove largest cookies first
+          return cookies
+            .sort(([, a], [, b]) => a.length - b.length)
+            .filter(([name, value]) => {
+              const testHeader = Array.from(jar.entries())
+                .filter(([n]) => n !== name)
+                .map(([n, v]) => `${n}=${v}`)
+                .join("; ");
+              return testHeader.length < maxSize;
+            })
+            .map(([name, value]) => `${name}=${value}`)
+            .join("; ");
+            
+        case 'priority':
+        default:
+          // Keep essential cookies (session, auth) first
+          const priorityCookies = ['sessionId', 'auth-token', 'csrf-token'];
+          const essential = cookies.filter(([name]) => priorityCookies.includes(name));
+          const optional = cookies.filter(([name]) => !priorityCookies.includes(name));
+          
+          let result = essential.map(([name, value]) => `${name}=${value}`).join("; ");
+          
+          for (const [name, value] of optional) {
+            const testHeader = result ? `${result}; ${name}=${value}` : `${name}=${value}`;
+            if (testHeader.length < maxSize) {
+              result = testHeader;
+            } else {
+              break;
+            }
+          }
+          
+          return result;
+      }
+    },
+
+    createScopedJar(scope: string): any {
+      if (!config.multiTenant?.enabled) {
+        log('warn', 'Multi-tenant mode not enabled, returning main jar');
+        return {
+          getCookies: () => this.getCookies(),
+          size: jar.size
+        };
+      }
+      
+      const separator = config.multiTenant.scopeSeparator || ':';
+      const scopedJar = typeof Bun !== 'undefined' && Bun.CookieMap 
+        ? new Bun.CookieMap(new Request('https://api.example.com'), {})
+        : new Map();
+      
+      // Copy only scope-relevant cookies
+      jar.forEach((value: string, name: string) => {
+        if (name.startsWith(`${scope}${separator}`)) {
+          const scopedName = name.replace(`${scope}${separator}`, '');
+          if (typeof Bun !== 'undefined' && Bun.CookieMap && scopedJar.set) {
+            scopedJar.set(scopedName, value);
+          } else {
+            (scopedJar as Map<string, string>).set(scopedName, value);
+          }
+        }
+      });
+      
+      log('debug', `Created scoped jar for '${scope}' with ${scopedJar.size} cookies`);
+      
+      // Return an object with the same interface as the main client
+      return {
+        getCookies: () => {
+          const cookies: Record<string, string> = {};
+          scopedJar.forEach((value: string, name: string) => {
+            cookies[name] = value;
+          });
+          return cookies;
+        },
+        size: scopedJar.size,
+        get: (name: string) => scopedJar.get(name),
+        has: (name: string) => scopedJar.has(name),
+        forEach: (callback: (value: string, name: string) => void) => {
+          scopedJar.forEach(callback);
+        }
+      };
+    },
+
+    async refreshIfNeeded(): Promise<boolean> {
+      if (!config.session?.autoRefresh) {
+        return false;
+      }
+      
+      const sessionCookie = this.getCookie('sessionId');
+      if (!sessionCookie) {
+        return false;
+      }
+      
+      // For simplicity, we'll check if we should refresh based on time
+      // In a real implementation, you'd parse the cookie's expiry
+      const threshold = config.session.refreshThreshold || 300; // 5 minutes default
+      
+      // This is a simplified check - in production you'd parse actual expiry
+      const lastRefresh = (jar as any)._lastRefresh || 0;
+      const timeSinceRefresh = (Date.now() - lastRefresh) / 1000;
+      
+      if (timeSinceRefresh > threshold) {
+        try {
+          let refreshEndpoint = config.session.refreshEndpoint || '/api/auth/refresh';
+          // Ensure we have a full URL for fetch
+          if (!refreshEndpoint.startsWith('http')) {
+            refreshEndpoint = `https://api.example.com${refreshEndpoint}`;
+          }
+          
+          const response = await fetch(refreshEndpoint, {
+            method: 'POST',
+            headers: {
+              'Cookie': this.toHeaderString(),
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (response.ok) {
+            (jar as any)._lastRefresh = Date.now();
+            log('info', 'Session refreshed successfully');
+            return true;
+          }
+        } catch (error) {
+          log('warn', 'Failed to refresh session (demo mode)', error);
+          // In demo mode, we'll just update the timestamp
+          (jar as any)._lastRefresh = Date.now();
+          return false;
+        }
+      }
+      
+      return false;
     },
 
     get size(): number {
