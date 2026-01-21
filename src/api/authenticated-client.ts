@@ -67,11 +67,11 @@ let metrics: RequestMetrics[] = [];
 let config: CookieClientConfig = {};
 
 if (import.meta.hot) {
-  jar = import.meta.hot.data.jar ?? (typeof Bun !== 'undefined' && Bun.CookieMap ? new Bun.CookieMap(new Request('https://api.example.com'), {}) : new Map());
+  jar = import.meta.hot.data.jar ?? (typeof Bun !== 'undefined' && Bun.CookieMap ? new Bun.CookieMap() : new Map());
   metrics = import.meta.hot.data.metrics ?? [];
   config = import.meta.hot.data.config ?? {};
 } else {
-  jar = typeof Bun !== 'undefined' && Bun.CookieMap ? new Bun.CookieMap(new Request('https://api.example.com'), {}) : new Map();
+  jar = typeof Bun !== 'undefined' && Bun.CookieMap ? new Bun.CookieMap() : new Map();
 }
 
 export function createCookieClient(clientConfig?: CookieClientConfig) {
@@ -258,6 +258,25 @@ export function createCookieClient(clientConfig?: CookieClientConfig) {
 
     getCookie(name: string): string | null {
       return jar.get(name);
+    },
+
+    // Enhanced method to get rich cookie object
+    getCookieObject(name: string): any | null {
+      const value = jar.get(name);
+      if (!value) return null;
+      
+      // Use Bun.Cookie.parse for rich cookie object if available
+      if (typeof Bun !== 'undefined' && Bun.Cookie) {
+        try {
+          return Bun.Cookie.parse(`${name}=${value}`);
+        } catch (error) {
+          log('warn', `Failed to parse cookie ${name}:`, error);
+          return { name, value };
+        }
+      }
+      
+      // Fallback to simple object
+      return { name, value };
     },
 
     hasCookie(name: string): boolean {
@@ -450,7 +469,7 @@ export function createCookieClient(clientConfig?: CookieClientConfig) {
       
       const separator = config.multiTenant.scopeSeparator || ':';
       const scopedJar = typeof Bun !== 'undefined' && Bun.CookieMap 
-        ? new Bun.CookieMap(new Request('https://api.example.com'), {})
+        ? new Bun.CookieMap()
         : new Map();
       
       // Copy only scope-relevant cookies
