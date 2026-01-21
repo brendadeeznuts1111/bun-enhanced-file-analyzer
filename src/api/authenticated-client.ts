@@ -3,6 +3,11 @@ import { Bun } from "bun";
 // Type guard for Bun availability
 declare const Bun: any | undefined;
 
+// Enhanced cookie interface with partitioned support
+interface EnhancedCookieInit extends Bun.CookieInit {
+  partitioned?: boolean; // CHIPS privacy support
+}
+
 interface CookieClientConfig {
   defaultOptions?: RequestInit;
   securityPolicy?: {
@@ -10,6 +15,7 @@ interface CookieClientConfig {
     httpOnly?: boolean;
     sameSite?: 'strict' | 'lax' | 'none';
     maxAge?: number;
+    partitioned?: boolean; // Default partitioned setting
   };
   interceptors?: {
     request?: (url: string, options: RequestInit) => Promise<{ url: string; options: RequestInit }>;
@@ -32,6 +38,10 @@ interface CookieClientConfig {
   multiTenant?: {
     enabled?: boolean;
     scopeSeparator?: string;
+  };
+  privacy?: {
+    enableCHIPS?: boolean; // Enable partitioned cookies by default
+    partitionKey?: string; // Custom partition key (e.g., 'top-level-site')
   };
 }
 
@@ -63,10 +73,15 @@ export function createCookieClient(clientConfig?: CookieClientConfig) {
       httpOnly: false,
       sameSite: 'lax',
       maxAge: 24 * 60 * 60, // 24 hours
+      partitioned: false, // Default to non-partitioned for backward compatibility
     },
     monitoring: {
       enabled: true,
       logLevel: 'info',
+    },
+    privacy: {
+      enableCHIPS: false, // Disable CHIPS by default
+      partitionKey: 'top-level-site', // Standard CHIPS partition key
     },
     ...clientConfig,
   };
@@ -217,8 +232,20 @@ export function createCookieClient(clientConfig?: CookieClientConfig) {
       jar.clear?.();
     },
 
-    setCookie(name: string, value: string, options?: Bun.CookieInit) {
-      jar.set(name, value, options);
+    setCookie(name: string, value: string, options?: EnhancedCookieInit) {
+      // Apply privacy settings for CHIPS
+      const enhancedOptions = {
+        ...config.securityPolicy,
+        ...options,
+        partitioned: options?.partitioned ?? config.privacy?.enableCHIPS ?? false
+      };
+      
+      // Log partitioned cookie creation for privacy auditing
+      if (enhancedOptions.partitioned) {
+        log('debug', `Setting partitioned cookie: ${name} (CHIPS enabled)`);
+      }
+      
+      jar.set(name, value, enhancedOptions);
     },
 
     getCookie(name: string): string | null {
@@ -237,12 +264,36 @@ export function createCookieClient(clientConfig?: CookieClientConfig) {
       return cookies;
     },
 
-    deleteCookie(name: string, options?: Bun.CookieInit) {
+    deleteCookie(name: string, options?: EnhancedCookieInit) {
       if (options) {
         jar.delete(name, options);
       } else {
         jar.delete(name);
       }
+    },
+
+    // Partitioned cookie utility methods
+    setPartitionedCookie(name: string, value: string, options?: Omit<EnhancedCookieInit, 'partitioned'>) {
+      return this.setCookie(name, value, { ...options, partitioned: true });
+    },
+
+    getPartitionedCookies(): Record<string, string> {
+      const partitioned: Record<string, string> = {};
+      jar.forEach((value: string, name: string) => {
+        // Check if this is a partitioned cookie (simplified check)
+        if (name.includes('_partitioned') || config.privacy?.enableCHIPS) {
+          partitioned[name] = value;
+        }
+      });
+      return partitioned;
+    },
+
+    clearPartitionedCookies() {
+      const partitionedCookies = this.getPartitionedCookies();
+      Object.keys(partitionedCookies).forEach(name => {
+        this.deleteCookie(name);
+      });
+      log('info', `Cleared ${Object.keys(partitionedCookies).length} partitioned cookies`);
     },
 
     getSetCookieHeaders(): string[] {
