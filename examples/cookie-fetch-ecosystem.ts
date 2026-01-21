@@ -7,38 +7,71 @@
 
 import { log } from "../src/utils/logger";
 
+// Type guard for Bun availability
+declare const Bun: any | undefined;
+
 // ====== 1. Bun.CookieMap - Manual Cookie Management ======
 
 console.log("🍪 1. Bun.CookieMap - Manual Cookie Management");
 
 // Create a CookieMap instance for manual cookie management
-const cookieJar = new Bun.CookieMap();
+let cookieJar: any;
+if (typeof Bun !== 'undefined' && Bun.CookieMap) {
+  cookieJar = new Bun.CookieMap();
+} else {
+  // Fallback for environments without Bun
+  cookieJar = new Map();
+  console.log("⚠️  Bun not available, using Map fallback");
+}
 
 // Manual cookie operations
-cookieJar.set("session", "abc123", {
-  domain: "localhost",
-  path: "/",
-  expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-  httpOnly: true,
-  secure: false, // Set to false for localhost development
-  sameSite: "strict",
-});
+if (typeof Bun !== 'undefined' && Bun.CookieMap && cookieJar.set) {
+  cookieJar.set("session", "abc123", {
+    domain: "localhost",
+    path: "/",
+    expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+    httpOnly: true,
+    secure: false, // Set to false for localhost development
+    sameSite: "strict",
+  });
+} else {
+  // Map fallback
+  (cookieJar as Map<string, string>).set("session", "abc123");
+}
 
-cookieJar.set("preferences", JSON.stringify({
-  theme: "dark",
-  language: "en",
-  notifications: true
-}), {
-  domain: "localhost",
-  path: "/",
-  expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-});
+if (typeof Bun !== 'undefined' && Bun.CookieMap && cookieJar.set) {
+  cookieJar.set("preferences", JSON.stringify({
+    theme: "dark",
+    language: "en",
+    notifications: true
+  }), {
+    domain: "localhost",
+    path: "/",
+    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+  });
+} else {
+  // Map fallback
+  (cookieJar as Map<string, string>).set("preferences", JSON.stringify({
+    theme: "dark",
+    language: "en",
+    notifications: true
+  }));
+}
 
 console.log("📊 Manual cookies set:", Object.fromEntries(cookieJar.entries()));
 
 // Manual cookie retrieval
-const sessionId = cookieJar.get("session");
-const preferences = JSON.parse(cookieJar.get("preferences") || "{}");
+let sessionId: string | undefined;
+let preferences: any;
+
+if (typeof Bun !== 'undefined' && Bun.CookieMap && cookieJar.get) {
+  sessionId = cookieJar.get("session");
+  preferences = JSON.parse(cookieJar.get("preferences") || "{}");
+} else {
+  // Map fallback
+  sessionId = (cookieJar as Map<string, string>).get("session");
+  preferences = JSON.parse((cookieJar as Map<string, string>).get("preferences") || "{}");
+}
 
 console.log("🔍 Retrieved session:", sessionId);
 console.log("🎨 Retrieved preferences:", preferences);
@@ -81,16 +114,30 @@ function createCookieClient(cookieMap: any) {
         // Automatic cookie extraction from Set-Cookie headers
         const setCookies = response.headers.getSetCookie?.() || [];
         for (const cookieHeader of setCookies) {
-          const cookie = Bun.Cookie.parse(cookieHeader);
+          let cookie;
+          if (typeof Bun !== 'undefined' && Bun.Cookie) {
+            cookie = Bun.Cookie.parse(cookieHeader);
+          } else {
+            // Simple fallback parsing
+            const [nameValue] = cookieHeader.split(';');
+            const [name, value] = nameValue.split('=');
+            cookie = { name, value };
+          }
+          
           if (cookie.name && cookie.value) {
-            cookieMap.set(cookie.name, cookie.value, {
-              domain: cookie.domain,
-              path: cookie.path,
-              expires: cookie.expires,
-              httpOnly: cookie.httpOnly,
-              secure: cookie.secure,
-              sameSite: cookie.sameSite,
-            });
+            if (typeof Bun !== 'undefined' && Bun.CookieMap && cookieJar.set) {
+              cookieJar.set(cookie.name, cookie.value, {
+                domain: cookie.domain,
+                path: cookie.path,
+                expires: cookie.expires,
+                httpOnly: cookie.httpOnly,
+                secure: cookie.secure,
+                sameSite: cookie.sameSite,
+              });
+            } else {
+              // Map fallback
+              (cookieJar as Map<string, string>).set(cookie.name, cookie.value);
+            }
             console.log("✅ Stored cookie:", cookie.name, "=", cookie.value);
           }
         }
@@ -136,94 +183,99 @@ const cookieClient = createCookieClient(cookieJar);
 console.log("\n🚀 3. Bun.serve - Server Implementation");
 
 // Server that works with our cookie client
-const server = Bun.serve({
-  port: 3008,
-  hostname: "localhost",
-  
-  fetch(req: Request) {
-    const url = new URL(req.url);
-    const method = req.method;
+let server: any;
+if (typeof Bun !== 'undefined' && Bun.serve) {
+  server = Bun.serve({
+    port: 3008,
+    hostname: "localhost",
     
-    console.log(`\n📡 ${method} ${url.pathname}`);
-    
-    // CORS headers for development
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization, Cookie",
-      "Access-Control-Allow-Credentials": "true",
-    };
+    fetch(req: Request) {
+      const url = new URL(req.url);
+      const method = req.method;
+      
+      console.log(`\n📡 ${method} ${url.pathname}`);
+      
+      // CORS headers for development
+      const corsHeaders = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, Cookie",
+        "Access-Control-Allow-Credentials": "true",
+      };
 
-    // Handle preflight requests
-    if (method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
-    }
+      // Handle preflight requests
+      if (method === "OPTIONS") {
+        return new Response(null, { headers: corsHeaders });
+      }
 
-    try {
-      // ==== API Routes ====
-      
-      if (url.pathname === "/api/auth/login" && method === "POST") {
-        return handleLogin(req, corsHeaders);
-      }
-      
-      if (url.pathname === "/api/user/profile" && method === "GET") {
-        return handleProfile(req, corsHeaders);
-      }
-      
-      if (url.pathname === "/api/user/preferences" && method === "GET") {
-        return handlePreferences(req, corsHeaders);
-      }
-      
-      if (url.pathname === "/api/user/preferences" && method === "POST") {
-        return handleUpdatePreferences(req, corsHeaders);
-      }
-      
-      if (url.pathname === "/api/auth/logout" && method === "POST") {
-        return handleLogout(req, corsHeaders);
-      }
-      
-      if (url.pathname === "/api/health" && method === "GET") {
+      try {
+        // ==== API Routes ====
+        
+        if (url.pathname === "/api/auth/login" && method === "POST") {
+          return handleLogin(req, corsHeaders);
+        }
+        
+        if (url.pathname === "/api/user/profile" && method === "GET") {
+          return handleProfile(req, corsHeaders);
+        }
+        
+        if (url.pathname === "/api/user/preferences" && method === "GET") {
+          return handlePreferences(req, corsHeaders);
+        }
+        
+        if (url.pathname === "/api/user/preferences" && method === "POST") {
+          return handleUpdatePreferences(req, corsHeaders);
+        }
+        
+        if (url.pathname === "/api/auth/logout" && method === "POST") {
+          return handleLogout(req, corsHeaders);
+        }
+        
+        if (url.pathname === "/api/health" && method === "GET") {
+          return new Response(JSON.stringify({
+            status: "healthy",
+            timestamp: new Date().toISOString(),
+            server: "Bun.serve with CookieMap",
+          }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" }
+          });
+        }
+        
+        // Default 404
         return new Response(JSON.stringify({
-          status: "healthy",
-          timestamp: new Date().toISOString(),
-          server: "Bun.serve with CookieMap",
+          error: "Route not found",
+          availableRoutes: [
+            "POST /api/auth/login",
+            "GET /api/user/profile",
+            "GET/POST /api/user/preferences",
+            "POST /api/auth/logout",
+            "GET /api/health"
+          ]
         }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+        
+      } catch (error) {
+        console.error("🔥 Server error:", (error as Error).message);
+        return new Response(JSON.stringify({
+          error: "Internal server error",
+          message: (error as Error).message
+        }), {
+          status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
-      
-      // Default 404
-      return new Response(JSON.stringify({
-        error: "Route not found",
-        availableRoutes: [
-          "POST /api/auth/login",
-          "GET /api/user/profile",
-          "GET/POST /api/user/preferences",
-          "POST /api/auth/logout",
-          "GET /api/health"
-        ]
-      }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
-      
-    } catch (error) {
-      console.error("🔥 Server error:", (error as Error).message);
-      return new Response(JSON.stringify({
-        error: "Internal server error",
-        message: (error as Error).message
-      }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
+    },
+    
+    error(error: Error) {
+      console.error("🔥 Server error:", error);
+      return new Response("Internal Server Error", { status: 500 });
     }
-  },
-  
-  error(error: Error) {
-    console.error("🔥 Server error:", error);
-    return new Response("Internal Server Error", { status: 500 });
-  }
-});
+  });
+} else {
+  console.log("⚠️  Bun.serve not available, skipping server creation");
+}
 
 // Server route handlers
 function handleLogin(req: Request, corsHeaders: Record<string, string>): Response {
@@ -492,7 +544,9 @@ demonstrateEcosystem().then(() => {
   console.error("\n❌ Demo failed:", error);
 }).finally(() => {
   console.log("\n🛑 Shutting down server...");
-  server.stop();
+  if (server && typeof server.stop === "function") {
+    server.stop();
+  }
 });
 
 // Export for external use
