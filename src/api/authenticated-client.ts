@@ -8,6 +8,14 @@ interface EnhancedCookieInit extends Bun.CookieInit {
   partitioned?: boolean; // CHIPS privacy support
 }
 
+// Cookie Store Delete Options (following Cookie Store API standard)
+interface CookieStoreDeleteOptions {
+  name?: string;
+  domain?: string;
+  path?: string;
+  partitioned?: boolean;
+}
+
 interface CookieClientConfig {
   defaultOptions?: RequestInit;
   securityPolicy?: {
@@ -264,6 +272,61 @@ export function createCookieClient(clientConfig?: CookieClientConfig) {
       return cookies;
     },
 
+    // Enhanced delete methods following Cookie Store API standard
+    delete(nameOrOptions: string | CookieStoreDeleteOptions, options?: Omit<CookieStoreDeleteOptions, "name">): void {
+      if (typeof nameOrOptions === 'string') {
+        // delete(name, options) overload
+        const name = nameOrOptions;
+        const deleteOptions = options || {};
+        
+        if (Object.keys(deleteOptions).length === 0) {
+          // Simple deletion by name only
+          jar.delete(name);
+          log('debug', `Deleted cookie: ${name}`);
+        } else {
+          // Deletion with domain/path constraints
+          this.deleteWithConstraints(name, deleteOptions);
+        }
+      } else {
+        // delete(options) overload
+        const deleteOptions = nameOrOptions;
+        
+        if (deleteOptions.name) {
+          this.deleteWithConstraints(deleteOptions.name, deleteOptions);
+        } else {
+          log('warn', 'Delete options must include a name property');
+        }
+      }
+    },
+
+    deleteWithConstraints(name: string, options: Omit<CookieStoreDeleteOptions, "name">): void {
+      const { domain, path, partitioned } = options;
+      
+      // For Bun.CookieMap, we need to handle deletion with constraints
+      if (typeof Bun !== 'undefined' && Bun.CookieMap && jar.delete) {
+        try {
+          // Try to delete with full options
+          jar.delete(name, { domain, path, partitioned });
+          log('debug', `Deleted cookie with constraints: ${name} (domain: ${domain || 'any'}, path: ${path || 'any'}, partitioned: ${partitioned || false})`);
+        } catch (error) {
+          // Fallback: try without partitioned if not supported
+          try {
+            jar.delete(name, { domain, path });
+            log('debug', `Deleted cookie with domain/path: ${name} (domain: ${domain || 'any'}, path: ${path || 'any'})`);
+          } catch (fallbackError) {
+            // Final fallback: simple deletion
+            jar.delete(name);
+            log('debug', `Deleted cookie (fallback): ${name}`);
+          }
+        }
+      } else {
+        // Map fallback - simple deletion
+        (jar as Map<string, string>).delete(name);
+        log('debug', `Deleted cookie (Map fallback): ${name}`);
+      }
+    },
+
+    // Legacy method for backward compatibility
     deleteCookie(name: string, options?: EnhancedCookieInit) {
       if (options) {
         jar.delete(name, options);
