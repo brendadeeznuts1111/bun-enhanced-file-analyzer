@@ -35,11 +35,11 @@ let metrics: RequestMetrics[] = [];
 let config: CookieClientConfig = {};
 
 if (import.meta.hot) {
-  jar = import.meta.hot.data.jar ?? (typeof Bun !== 'undefined' && Bun.CookieMap ? new Bun.CookieMap() : new Map());
+  jar = import.meta.hot.data.jar ?? (typeof Bun !== 'undefined' && Bun.CookieMap ? new Bun.CookieMap(new Request('https://api.example.com'), {}) : new Map());
   metrics = import.meta.hot.data.metrics ?? [];
   config = import.meta.hot.data.config ?? {};
 } else {
-  jar = typeof Bun !== 'undefined' && Bun.CookieMap ? new Bun.CookieMap() : new Map();
+  jar = typeof Bun !== 'undefined' && Bun.CookieMap ? new Bun.CookieMap(new Request('https://api.example.com'), {}) : new Map();
 }
 
 export function createCookieClient(clientConfig?: CookieClientConfig) {
@@ -213,6 +213,14 @@ export function createCookieClient(clientConfig?: CookieClientConfig) {
 
     hasCookie(name: string): boolean {
       return jar.has(name);
+    },
+
+    getCookies(): Record<string, string> {
+      const cookies: Record<string, string> = {};
+      jar.forEach((value: string, name: string) => {
+        cookies[name] = value;
+      });
+      return cookies;
     },
 
     deleteCookie(name: string, options?: Bun.CookieInit) {
