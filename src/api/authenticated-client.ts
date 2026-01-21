@@ -1,5 +1,8 @@
 import { Bun } from "bun";
 
+// Type guard for Bun availability
+declare const Bun: any | undefined;
+
 interface CookieClientConfig {
   defaultOptions?: RequestInit;
   securityPolicy?: {
@@ -27,16 +30,16 @@ interface RequestMetrics {
   timestamp: number;
 }
 
-let jar: Bun.CookieMap;
+let jar: any;
 let metrics: RequestMetrics[] = [];
 let config: CookieClientConfig = {};
 
 if (import.meta.hot) {
-  jar = import.meta.hot.data.jar ?? new Bun.CookieMap();
+  jar = import.meta.hot.data.jar ?? (typeof Bun !== 'undefined' && Bun.CookieMap ? new Bun.CookieMap() : new Map());
   metrics = import.meta.hot.data.metrics ?? [];
   config = import.meta.hot.data.config ?? {};
 } else {
-  jar = new Bun.CookieMap();
+  jar = typeof Bun !== 'undefined' && Bun.CookieMap ? new Bun.CookieMap() : new Map();
 }
 
 export function createCookieClient(clientConfig?: CookieClientConfig) {
@@ -123,7 +126,15 @@ export function createCookieClient(clientConfig?: CookieClientConfig) {
         
         for (const header of setCookies) {
           try {
-            const cookie = Bun.Cookie.parse(header);
+            let cookie;
+            if (typeof Bun !== 'undefined' && Bun.Cookie) {
+              cookie = Bun.Cookie.parse(header);
+            } else {
+              // Simple fallback parsing
+              const [nameValue] = header.split(';');
+              const [name, value] = nameValue.split('=');
+              cookie = { name, value };
+            }
             
             // Apply security policy
             const cookieOptions = {
@@ -136,7 +147,12 @@ export function createCookieClient(clientConfig?: CookieClientConfig) {
               sameSite: cookie.sameSite ?? config.securityPolicy?.sameSite,
             };
             
-            jar.set(cookie.name, cookie.value, cookieOptions);
+            if (typeof Bun !== 'undefined' && Bun.CookieMap && jar.set) {
+              jar.set(cookie.name, cookie.value, cookieOptions);
+            } else {
+              // Map fallback
+              (jar as Map<string, string>).set(cookie.name, cookie.value);
+            }
             newCookieCount++;
             
             log('debug', `Stored cookie: ${cookie.name}`);
